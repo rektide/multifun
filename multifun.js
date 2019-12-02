@@ -50,15 +50,15 @@ async function asyncNext( ctx){
 
 export function Multifun( fn, opts= {}){
 	const
-	  name= typeof fn=== "string"? fn: fn&& fn.name|| "multifunc"
-	  fn= ({ [ name]: function( ...args){
+	  name= typeof fn=== "string"? fn: fn&& fn.name|| "multifun"
+	  multifun= ({ [ name]: function( ...args){
 		// I would love some convenient way to turn this into a history-preserving object
 		const ctx= {
-			args: args,
-			multifun: fn,
+			args,
+			multifun,
 			output: undefined,
 			fault: undefined
-			i: 0
+			position: 0
 		}
 		if( fn.async){
 			return asyncNext( ctx)
@@ -66,8 +66,7 @@ export function Multifun( fn, opts= {}){
 			return syncNext( ctx)
 		}
 	  })[ name]
-	fn.phases= opts.phases|| Phases
-	fn.async= opts.async|| false
-	
-	return fn
+	multifun.phases= opts.phases|| Phases
+	multifun.async= opts.async|| false
+	return multifun
 }

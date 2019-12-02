@@ -2,6 +2,26 @@
 import Phases from "./phases.js"
 
 function syncNext(){
+	// get phase, advance
+	ctx.phase= ctx.multifun.phases[ ctx.position]
+	++ctx.position
+
+	// run phase
+	try{
+		ctx.output= phase.call( ctx, ...args)
+		// this synchronous invocation will not resolve out intermediary steps
+		// (but perhaps output is still a promise)
+	}catch( fault){
+		ctx.fault= fault
+	}
+	if( ctx.fault){
+		throw ctx.fault
+	}
+	if( ctx.position>= ctx.multifun.phases.length){
+		return ctx.output
+	}
+	return asyncNext( ctx)
+
 }
 
 async function asyncNext( ctx){
@@ -40,10 +60,11 @@ export function Multifun( fn, opts= {}){
 			fault: undefined
 			i: 0
 		}
-		function next(){
-			
+		if( fn.async){
+			return asyncNext( ctx)
+		}else{
+			return syncNext( ctx)
 		}
-		return ctx.output
 	  })[ name]
 	fn.phases= opts.phases|| Phases
 	fn.async= opts.async|| false

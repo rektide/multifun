@@ -5,7 +5,16 @@ function syncCall( phase, ctx){
 	
 }
 
-async function syncCall( phase, ctx){
+async function asyncCall( phase, ctx){
+	let val= phase.call( ctx, ...args)
+	try{
+		val= await val
+	}catch( fault){
+		ctx.fault= fault
+	}
+	if( ctx.fault){
+		throw ctx.fault
+	}
 }
 
 export function Multifun( fn, opts= {}){
@@ -19,17 +28,6 @@ export function Multifun( fn, opts= {}){
 			fault: undefined
 		}
 		for( const let i= 0; i< phases.length; ++i){
-			let val= phases.call( ctx, ...args)
-			if( fn.async){
-				try{
-					val= await val
-				}catch( fault){
-					ctx.fault= fault
-				}
-			}
-			if( ctx.fault){
-				throw ctx.fault
-			}
 		}
 		return ctx.output
 	  })[ name]

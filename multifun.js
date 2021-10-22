@@ -57,7 +57,7 @@ export function Multifun( fn, opts= {}){
 			args,
 			multifun,
 			output: undefined,
-			fault: undefined
+			fault: undefined,
 			position: 0
 		}
 		if( fn.async){
@@ -65,7 +65,7 @@ export function Multifun( fn, opts= {}){
 		}else{
 			return syncNext( ctx)
 		}
-	  })[ name]
+	  }})[ name];
 	multifun.phases= opts.phases|| Phases
 	multifun.async= opts.async|| false
 	return multifun
